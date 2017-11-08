@@ -7,23 +7,16 @@ RUN apt-get update && apt-get install -y git gcc build-essential \
     wget bzip2 ca-certificates libglib2.0-0 libxext6 libsm6 \
     libxrender1 mercurial subversion
 
-#RUN cd /opt; \
-#    wget --quiet https://github.com/dmlc/xgboost/archive/v$XGBOOST_VERSION.tar.gz && \
-#    tar -xf v$XGBOOST_VERSION.tar.gz && rm v$XGBOOST_VERSION.tar.gz
-#RUN cd /opt/xgboost-$XGBOOST_VERSION; make -j4
-
-#RUN cd /opt; git clone --depth=1 --recursive --shallow-submodules https://github.com/dmlc/xgboost
-
-RUN cd /opt; git clone --recursive https://github.com/dmlc/xgboost
-RUN cd /opt/xgboost; make -j4
+RUN cd /opt; git clone --recursive https://github.com/dmlc/xgboost && \
+    cd /opt/xgboost; make -j4
 
 RUN cd /; echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
-    wget https://repo.continuum.io/archive/Anaconda2-$ANACONDA2_VERSION-Linux-x86_64.sh
-RUN /bin/bash /Anaconda2-$ANACONDA2_VERSION-Linux-x86_64.sh -b -p /opt/conda && \
+    wget https://repo.continuum.io/archive/Anaconda2-$ANACONDA2_VERSION-Linux-x86_64.sh && \
+    /bin/bash /Anaconda2-$ANACONDA2_VERSION-Linux-x86_64.sh -b -p /opt/conda && \
     rm /Anaconda2-$ANACONDA2_VERSION-Linux-x86_64.sh
 
-RUN conda install -y -c https://conda.anaconda.org/anaconda setuptools
-RUN cd /opt/xgboost/python-package/ && python setup.py install && pip install gunicorn
+RUN conda install -y -c https://conda.anaconda.org/anaconda setuptools && \
+    cd /opt/xgboost/python-package/ && python setup.py install && pip install gunicorn
 
 # Add a notebook profile.
 RUN mkdir -p -m 700 /root/.jupyter/ && \
